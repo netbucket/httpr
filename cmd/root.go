@@ -15,18 +15,18 @@ package cmd
 
 import (
 	"fmt"
-  "log"
-  "net/http"
+	"log"
+	"net/http"
 	"os"
-  "os/signal"
-  "syscall"
+	"os/signal"
+	"syscall"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
-  httpService string
+	httpService string
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -53,7 +53,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-  RootCmd.PersistentFlags().StringVarP(&httpService, "http", "s", ":3115", "HTTP service address")
+	RootCmd.PersistentFlags().StringVarP(&httpService, "http", "s", ":3115", "HTTP service address")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -63,9 +63,9 @@ func initConfig() {
 
 // Start the HTTP server
 func startServer() {
-  go log.Fatal(http.ListenAndServe(httpService, nil))
+	go log.Fatal(http.ListenAndServe(httpService, nil))
 
-  ch := make(chan os.Signal)
+	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	<-ch
 }

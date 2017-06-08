@@ -14,11 +14,11 @@
 package cmd
 
 import (
-  "fmt"
-  "net/http"
-  "net/http/httputil"
+	"net/http"
 
+	"github.com/netbucket/httpr/handlers"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 // logCmd represents the log command
@@ -33,20 +33,10 @@ See detailed help for options to modify the HTTP response behavior.`,
 func init() {
 	RootCmd.AddCommand(logCmd)
 
-	logCmd.Flags().BoolP("raw", "r", false, "Log HTTP requests in raw text format")
-  logCmd.Flags().BoolP("json", "j", false, "Log HTTP requests in JSON format")
+	logCmd.Flags().BoolP("json", "j", false, "Log HTTP requests in JSON format")
 }
 
 func executeLog(cmd *cobra.Command, args []string) {
-  http.HandleFunc("/", logRequests)
-  startServer()
-}
-
-func logRequests(w http.ResponseWriter, r *http.Request) {
-  requestData, err := httputil.DumpRequest(r, true)
-  if err != nil {
-    fmt.Println(err)
-  }
-
-  fmt.Println(string(requestData))
+	http.Handle("/", handlers.RawRequestLoggingHandler(os.Stdout, nil))
+	startServer()
 }
