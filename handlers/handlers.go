@@ -14,12 +14,14 @@
 package handlers
 
 import (
+	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httputil"
 )
 
-func RawRequestLoggingHandler(out io.Writer, h http.Handler) http.Handler {
+func RawRequestLoggingHandler(out io.Writer, echo bool, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if h != nil {
 			h.ServeHTTP(w, r)
@@ -28,6 +30,32 @@ func RawRequestLoggingHandler(out io.Writer, h http.Handler) http.Handler {
 		body, err := httputil.DumpRequest(r, true)
 		if err == nil {
 			out.Write(body)
+
+			if echo {
+				w.Write(body)
+			}
+		}
+
+	})
+}
+
+func JSONRequestLoggingHandler(out io.Writer, echo bool, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+
+		body, err := json.Marshal(r)
+
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			out.Write(body)
+
+			if echo {
+				w.Header().Set("Content-Type", "application/json")
+				w.Write(body)
+			}
 		}
 	})
 }

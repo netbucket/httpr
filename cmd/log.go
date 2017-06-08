@@ -30,13 +30,29 @@ See detailed help for options to modify the HTTP response behavior.`,
 	Run: executeLog,
 }
 
+var (
+	logJSON bool
+	echo    bool
+)
+
 func init() {
 	RootCmd.AddCommand(logCmd)
 
-	logCmd.Flags().BoolP("json", "j", false, "Log HTTP requests in JSON format")
+	logCmd.Flags().BoolVarP(&logJSON, "json", "j", false, "Log HTTP requests in JSON format")
+	logCmd.Flags().BoolVarP(&echo, "echo", "e", false, "Send the logged contents back to the HTTP client")
 }
 
 func executeLog(cmd *cobra.Command, args []string) {
-	http.Handle("/", handlers.RawRequestLoggingHandler(os.Stdout, nil))
+
+	var h http.Handler
+	{
+		if logJSON {
+			h = handlers.JSONRequestLoggingHandler(os.Stdout, echo, nil)
+		} else {
+			h = handlers.RawRequestLoggingHandler(os.Stdout, echo, nil)
+		}
+	}
+
+	http.Handle("/", h)
 	startServer()
 }
