@@ -1,4 +1,4 @@
-// Copyright © 2017 Igor Bondarenko <igor@context7.com>
+// Copyright © 2017 Igor Bondarenko <ibondare@protonmail.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at

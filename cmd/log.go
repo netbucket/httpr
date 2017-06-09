@@ -1,4 +1,4 @@
-// Copyright © 2017 Igor Bondarenko <igor@context7.com>
+// Copyright © 2017 Igor Bondarenko <ibondare@protonmail.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -31,14 +31,16 @@ See detailed help for options to modify the HTTP response behavior.`,
 }
 
 var (
-	logJSON bool
-	echo    bool
+	logJSON       bool
+	logPrettyJSON bool
+	echo          bool
 )
 
 func init() {
 	RootCmd.AddCommand(logCmd)
 
 	logCmd.Flags().BoolVarP(&logJSON, "json", "j", false, "Log HTTP requests in JSON format")
+	logCmd.Flags().BoolVarP(&logPrettyJSON, "json-pp", "p", false, "Log HTTP requests in pretty-printed (indented) JSON format, ")
 	logCmd.Flags().BoolVarP(&echo, "echo", "e", false, "Send the logged contents back to the HTTP client")
 }
 
@@ -46,8 +48,8 @@ func executeLog(cmd *cobra.Command, args []string) {
 
 	var h http.Handler
 	{
-		if logJSON {
-			h = handlers.JSONRequestLoggingHandler(os.Stdout, echo, nil)
+		if logJSON || logPrettyJSON {
+			h = handlers.JSONRequestLoggingHandler(os.Stdout, logPrettyJSON, echo, nil)
 		} else {
 			h = handlers.RawRequestLoggingHandler(os.Stdout, echo, nil)
 		}
