@@ -15,12 +15,84 @@ package handlers
 
 import (
 	"bytes"
-	"io"
+	"github.com/netbucket/httpr/context"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"time"
 )
+
+func RawRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+
+		body, err := httputil.DumpRequest(r, true)
+		if err == nil {
+			body = append(body, []byte("\n")...)
+
+			ctx.Out.Write(body)
+
+			if ctx.Echo {
+				w.Write(body)
+			}
+		}
+	})
+}
+
+func JSONRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+
+		body, err := encodeAsJSON(r, ctx.LogPrettyJSON)
+
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			body = append(body, []byte("\n")...)
+			ctx.Out.Write(body)
+
+			if ctx.Echo {
+				w.Header().Set("Content-Type", "application/json")
+				w.Write(body)
+			}
+		}
+	})
+}
+
+func ResponeCodeHandler(ctx *context.Context, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+
+		w.WriteHeader(ctx.HttpCode)
+	})
+}
+
+func DelayHandler(ctx *context.Context, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+
+		time.Sleep(time.Duration(ctx.Delay) * time.Millisecond)
+	})
+}
+
+func FailureSimulationHandler(ctx *context.Context, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+
+		w.WriteHeader(ctx.SimulateFailure())
+	})
+}
 
 func copyRequestBody(r *http.Request) []byte {
 	data, err := ioutil.ReadAll(r.Body)
@@ -33,45 +105,4 @@ func copyRequestBody(r *http.Request) []byte {
 	r.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 
 	return data
-}
-
-func RawRequestLoggingHandler(out io.Writer, echo bool, h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if h != nil {
-			h.ServeHTTP(w, r)
-		}
-
-		body, err := httputil.DumpRequest(r, true)
-		if err == nil {
-			body = append(body, []byte("\n")...)
-
-			out.Write(body)
-
-			if echo {
-				w.Write(body)
-			}
-		}
-	})
-}
-
-func JSONRequestLoggingHandler(out io.Writer, prettyPrint bool, echo bool, h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if h != nil {
-			h.ServeHTTP(w, r)
-		}
-
-		body, err := encodeAsJSON(r, prettyPrint)
-
-		if err != nil {
-			log.Fatal(err)
-		} else {
-			body = append(body, []byte("\n")...)
-			out.Write(body)
-
-			if echo {
-				w.Header().Set("Content-Type", "application/json")
-				w.Write(body)
-			}
-		}
-	})
 }

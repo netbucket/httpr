@@ -15,27 +15,19 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"net/http"
 	"os"
-	"os/signal"
-	"syscall"
 
+	"github.com/netbucket/httpr/context"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-)
-
-var (
-	httpService string
 )
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "httpr",
 	Short: "A simple HTTP server for examining and testing HTTP requests",
-	Long: `HTTP Rake (or httpr) is a compact and flexible HTTP server.
-This application is a useful tool for examining and testing HTTP requests
-without the need to configure and deploy a full-fledged Web server or a proxy.`,
+	Long: `HTTP Rake (httpr) is a compact and flexible HTTP server that is useful for
+examining and testing HTTP requests without the need to configure and deploy a full-fledged Web server or a proxy.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -53,19 +45,14 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	RootCmd.PersistentFlags().StringVarP(&httpService, "http", "s", ":3115", "HTTP service address")
+	ctx := context.Instance()
+
+	ctx.Out = os.Stdout
+
+	RootCmd.PersistentFlags().StringVarP(&ctx.HttpService, "http", "s", ":3115", "HTTP service address")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
-}
-
-// Start the HTTP server
-func startServer() {
-	go log.Fatal(http.ListenAndServe(httpService, nil))
-
-	ch := make(chan os.Signal)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	<-ch
 }

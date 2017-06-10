@@ -16,9 +16,9 @@ package cmd
 import (
 	"net/http"
 
+	"github.com/netbucket/httpr/context"
 	"github.com/netbucket/httpr/handlers"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 // logCmd represents the log command
@@ -30,31 +30,48 @@ See detailed help for options to modify the HTTP response behavior.`,
 	Run: executeLog,
 }
 
-var (
-	logJSON       bool
-	logPrettyJSON bool
-	echo          bool
-)
-
 func init() {
 	RootCmd.AddCommand(logCmd)
 
-	logCmd.Flags().BoolVarP(&logJSON, "json", "j", false, "Log HTTP requests in JSON format")
-	logCmd.Flags().BoolVarP(&logPrettyJSON, "json-pp", "p", false, "Log HTTP requests in pretty-printed (indented) JSON format, ")
-	logCmd.Flags().BoolVarP(&echo, "echo", "e", false, "Send the logged contents back to the HTTP client")
+	ctx := context.Instance()
+
+	logCmd.Flags().BoolVarP(&ctx.LogJSON, "json", "j", false, "Log HTTP requests in JSON format")
+	logCmd.Flags().BoolVarP(&ctx.LogPrettyJSON, "json-pp", "p", false, "Log HTTP requests in pretty-printed (indented) JSON format, ")
+	logCmd.Flags().BoolVarP(&ctx.Echo, "echo", "e", false, "Send the logged contents back to the HTTP client")
+	logCmd.Flags().IntVarP(&ctx.HttpCode, "response-code", "r", 200, "Send the specified HTTP status code back to the client")
+	logCmd.Flags().IntVarP(&ctx.Delay, "delay", "d", 0, "Delay, in milliseconds, when replying to incoming HTTP requests")
+	logCmd.Flags().BoolVarP(&ctx.FailureMode.Enabled, "simulate-failure", "", false, "Simulate a transient failure: return an error code before a successful response")
+	logCmd.Flags().IntVarP(&ctx.FailureMode.FailureCount, "simulate-failure-count", "", 1, "For --simulate-failure, determines how many errors are returned before a successful response")
+	logCmd.Flags().IntVarP(&ctx.FailureMode.SuccessCount, "simulate-success-count", "", 1, "For --simulate-failure, determines how many successful responses are returned before returning a error code")
+	logCmd.Flags().IntVarP(&ctx.FailureMode.FailureCode, "simulate-failure-code", "", 500, "For --simulate-failure, determines the HTTP status code for an error response")
+	logCmd.Flags().IntVarP(&ctx.FailureMode.SuccessCode, "simulate-success-code", "", 200, "For --simulate-failure, determines the HTTP status code for a successful response")
 }
 
 func executeLog(cmd *cobra.Command, args []string) {
 
+	ctx := context.Instance()
+
 	var h http.Handler
 	{
-		if logJSON || logPrettyJSON {
-			h = handlers.JSONRequestLoggingHandler(os.Stdout, logPrettyJSON, echo, nil)
+		if ctx.FailureMode.Enabled {
+			h = handlers.FailureSimulationHandler(ctx, nil)
 		} else {
-			h = handlers.RawRequestLoggingHandler(os.Stdout, echo, nil)
+			h = handlers.ResponeCodeHandler(ctx, nil)
 		}
+
+		if ctx.LogJSON || ctx.LogPrettyJSON {
+			h = handlers.JSONRequestLoggingHandler(ctx, h)
+		} else {
+			h = handlers.RawRequestLoggingHandler(ctx, h)
+		}
+
+		if ctx.Delay > 0 {
+			h = handlers.DelayHandler(ctx, h)
+		}
+
 	}
 
 	http.Handle("/", h)
-	startServer()
+
+	ctx.StartServer()
 }
