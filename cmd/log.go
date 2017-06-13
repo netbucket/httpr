@@ -40,7 +40,7 @@ func init() {
 	logCmd.Flags().BoolVarP(&ctx.Echo, "echo", "e", false, "Send the logged contents back to the HTTP client")
 	logCmd.Flags().IntVarP(&ctx.HttpCode, "response-code", "r", 200, "Send the specified HTTP status code back to the client")
 	logCmd.Flags().IntVarP(&ctx.Delay, "delay", "d", 0, "Delay, in milliseconds, when replying to incoming HTTP requests")
-	logCmd.Flags().BoolVarP(&ctx.FailureMode.Enabled, "simulate-failure", "", false, "Simulate a transient failure: return an error code before a successful response")
+	logCmd.Flags().BoolVarP(&ctx.FailureMode.Enabled, "simulate-failure", "f", false, "Simulate a transient failure: return an error code before a successful response")
 	logCmd.Flags().IntVarP(&ctx.FailureMode.FailureCount, "simulate-failure-count", "", 1, "For --simulate-failure, determines how many errors are returned before a successful response")
 	logCmd.Flags().IntVarP(&ctx.FailureMode.SuccessCount, "simulate-success-count", "", 1, "For --simulate-failure, determines how many successful responses are returned before returning a error code")
 	logCmd.Flags().IntVarP(&ctx.FailureMode.FailureCode, "simulate-failure-code", "", 500, "For --simulate-failure, determines the HTTP status code for an error response")
@@ -48,9 +48,19 @@ func init() {
 }
 
 func executeLog(cmd *cobra.Command, args []string) {
-
 	ctx := context.Instance()
 
+	h := setupHandlerChain(ctx)
+
+	http.Handle("/", h)
+
+	// Start the HTTP server and handle the command
+	ctx.StartServer()
+
+	ctx.Close()
+}
+
+func setupHandlerChain(ctx *context.Context) http.Handler {
 	var h http.Handler
 	{
 		if ctx.FailureMode.Enabled {
@@ -71,7 +81,5 @@ func executeLog(cmd *cobra.Command, args []string) {
 
 	}
 
-	http.Handle("/", h)
-
-	ctx.StartServer()
+	return h
 }

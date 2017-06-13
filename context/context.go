@@ -69,33 +69,49 @@ func (ctx *Context) StartServer() {
 
 // Execute a failure simulation and return an HTTP code representing the outcome
 func (ctx *Context) SimulateFailure() int {
-	var outcome int
-
 	ctx.Mutex.Lock()
 
 	defer ctx.Mutex.Unlock()
 
-	if ctx.FailureMode.FailureIterationCount < ctx.FailureMode.FailureCount {
-		outcome = ctx.FailureMode.FailureCode
+	var outcome int = ctx.HttpCode
 
-		ctx.FailureMode.FailureIterationCount++
+	if ctx.FailureMode.Enabled {
+		if ctx.FailureMode.FailureIterationCount < ctx.FailureMode.FailureCount {
+			outcome = ctx.FailureMode.FailureCode
 
-		if ctx.FailureMode.FailureIterationCount == ctx.FailureMode.FailureCount {
-			// Done with the failure sequence, next call will return success
-			ctx.FailureMode.SuccessIterationCount = 0
+			ctx.FailureMode.FailureIterationCount++
+
+			if ctx.FailureMode.FailureIterationCount == ctx.FailureMode.FailureCount {
+				// Done with the failure sequence, next call will return success if needed
+				// Otherwise, continue with the failure sequence if success count is set to 0
+				if ctx.FailureMode.SuccessCount > 0 {
+					ctx.FailureMode.SuccessIterationCount = 0
+				} else {
+					ctx.FailureMode.FailureIterationCount = 0
+				}
+			}
+
+		} else if ctx.FailureMode.SuccessIterationCount < ctx.FailureMode.SuccessCount {
+			outcome = ctx.FailureMode.SuccessCode
+
+			ctx.FailureMode.SuccessIterationCount++
+
+			if ctx.FailureMode.SuccessIterationCount == ctx.FailureMode.SuccessCount {
+				// Done with the success sequence, next call will return failure if needed
+				// Otherwise, continue with the success sequence if failure count is set to 0
+				if ctx.FailureMode.FailureCount > 0 {
+					ctx.FailureMode.FailureIterationCount = 0
+				} else {
+					ctx.FailureMode.SuccessIterationCount = 0
+				}
+			}
 		}
-
-	} else if ctx.FailureMode.SuccessIterationCount < ctx.FailureMode.SuccessCount {
-		outcome = ctx.FailureMode.SuccessCode
-
-		ctx.FailureMode.SuccessIterationCount++
-
-		if ctx.FailureMode.SuccessIterationCount == ctx.FailureMode.SuccessCount {
-			// Done with the failure sequence, next call will return success
-			ctx.FailureMode.FailureIterationCount = 0
-		}
-
 	}
 
 	return outcome
+}
+
+// Close the context
+func (ctx *Context) Close() {
+	// noop for now
 }
