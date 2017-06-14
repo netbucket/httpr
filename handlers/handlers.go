@@ -15,6 +15,7 @@ package handlers
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/netbucket/httpr/context"
 	"io/ioutil"
 	"log"
@@ -34,6 +35,8 @@ func RawRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handler
 		body, err := httputil.DumpRequest(r, true)
 		if err == nil {
 			body = append(body, []byte("\n")...)
+
+			ctx.Out.Write([]byte(fmt.Sprintf("Remote address: %s\n", r.RemoteAddr)))
 
 			ctx.Out.Write(body)
 

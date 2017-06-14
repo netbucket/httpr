@@ -19,22 +19,23 @@ import (
 )
 
 type requestModel struct {
-	Method string      `json:"method,omitempty"`
-	URL    string      `json:"url,omitempty"`
-	Proto  string      `json:"proto,omitempty"`
-	Header http.Header `json:"header,omitempty"`
+	RemoteAddr string      `json:"remoteAddr,omitempty"`
+	Host       string      `json:"host,omitempty"`
+	Method     string      `json:"method,omitempty"`
+	URL        string      `json:"url,omitempty"`
+	Proto      string      `json:"proto,omitempty"`
+	Header     http.Header `json:"header,omitempty"`
 	//Body io.ReadCloser
 	ContentLength    int64    `json:"content_length,omitempty"`
 	TransferEncoding []string `json:"transfer_encoding,omitempty"`
-	Host             string   `json:"host,omitempty"`
 	Body             string   `json:"body,omitempty"`
 }
 
 func encodeAsJSON(r *http.Request, prettyPrint bool) ([]byte, error) {
 	model := requestModel{
-		Method: r.Method, URL: r.RequestURI, Proto: r.Proto, Header: r.Header,
+		RemoteAddr: r.RemoteAddr, Host: r.Host, Method: r.Method,
+		URL: r.RequestURI, Proto: r.Proto, Header: r.Header,
 		ContentLength: r.ContentLength, TransferEncoding: r.TransferEncoding,
-		Host: r.Host,
 	}
 
 	if r.Body != nil {
