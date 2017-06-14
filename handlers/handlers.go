@@ -23,6 +23,8 @@ import (
 	"time"
 )
 
+// RawRequestLoggingHandler returns a handler function that logs the incoming
+// HTTP request in plain text format
 func RawRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if h != nil {
@@ -42,6 +44,8 @@ func RawRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handler
 	})
 }
 
+// JSONLoggingHandler returns a handler function that logs the incoming
+// HTTP request in a compact or formatted JSON format
 func JSONRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if h != nil {
@@ -64,7 +68,9 @@ func JSONRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handle
 	})
 }
 
-func ResponeCodeHandler(ctx *context.Context, h http.Handler) http.Handler {
+// ResponseCodeHandler returns a handler function that returns the specified
+// HTTP status code
+func ResponseCodeHandler(ctx *context.Context, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if h != nil {
 			h.ServeHTTP(w, r)
@@ -74,6 +80,8 @@ func ResponeCodeHandler(ctx *context.Context, h http.Handler) http.Handler {
 	})
 }
 
+// DelayHandler returns a handler function that introduces a delay in
+// responding to the HTTP request
 func DelayHandler(ctx *context.Context, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if h != nil {
@@ -84,6 +92,9 @@ func DelayHandler(ctx *context.Context, h http.Handler) http.Handler {
 	})
 }
 
+// FailureSimulationHandler returns a handler function that simulates a transient
+// HTTP failure scenario, e.g. a series of failure response codes followed
+// by a series of successful HTTP status codes
 func FailureSimulationHandler(ctx *context.Context, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if h != nil {
@@ -94,6 +105,8 @@ func FailureSimulationHandler(ctx *context.Context, h http.Handler) http.Handler
 	})
 }
 
+// copyRequestBody makes a non-destructive copy of the HTTP request body contents
+// to make the contents available for repeated use by multiple HTTP handlers
 func copyRequestBody(r *http.Request) []byte {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {

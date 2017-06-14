@@ -32,7 +32,7 @@ func TestDisabledSimulateFailure(t *testing.T) {
 
 	ctx := &Context{
 		Mutex: &sync.Mutex{},
-		FailureMode: failureSimulation{
+		FailureMode: FailureSimulation{
 			Enabled: false, FailureCount: 2, SuccessCount: 2, FailureCode: 500, SuccessCode: 201},
 		HttpCode: expectedHttpCode}
 
@@ -49,27 +49,27 @@ func TestSimulateFailure(t *testing.T) {
 	tests := []*Context{
 		&Context{
 			Mutex: &sync.Mutex{},
-			FailureMode: failureSimulation{
+			FailureMode: FailureSimulation{
 				Enabled: true, FailureCount: 5, SuccessCount: 10, FailureCode: 500, SuccessCode: 200},
 		},
 		&Context{
 			Mutex: &sync.Mutex{},
-			FailureMode: failureSimulation{
+			FailureMode: FailureSimulation{
 				Enabled: true, FailureCount: 1, SuccessCount: 1, FailureCode: 502, SuccessCode: 201},
 		},
 		&Context{
 			Mutex: &sync.Mutex{},
-			FailureMode: failureSimulation{
+			FailureMode: FailureSimulation{
 				Enabled: true, FailureCount: 5, SuccessCount: 0, FailureCode: 500, SuccessCode: 200},
 		},
 		&Context{
 			Mutex: &sync.Mutex{},
-			FailureMode: failureSimulation{
+			FailureMode: FailureSimulation{
 				Enabled: true, FailureCount: 0, SuccessCount: 5, FailureCode: 500, SuccessCode: 200},
 		},
 		&Context{
 			Mutex: &sync.Mutex{},
-			FailureMode: failureSimulation{
+			FailureMode: FailureSimulation{
 				Enabled: true, FailureCount: 0, SuccessCount: 0, FailureCode: 500, SuccessCode: 200},
 		},
 	}

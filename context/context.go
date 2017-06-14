@@ -23,7 +23,7 @@ import (
 	"syscall"
 )
 
-// Context
+// Context type holds the desired execution profile for a command
 type Context struct {
 	Mutex         *sync.Mutex
 	HttpService   string
@@ -33,11 +33,11 @@ type Context struct {
 	Echo          bool
 	HttpCode      int
 	Delay         int
-	FailureMode   failureSimulation
+	FailureMode   FailureSimulation
 }
 
 // FailureSimulation desribes the intended behavior of the transient failure mode in httpr
-type failureSimulation struct {
+type FailureSimulation struct {
 	Enabled               bool
 	FailureCount          int
 	SuccessCount          int
@@ -53,7 +53,7 @@ var once sync.Once
 
 func Instance() *Context {
 	once.Do(func() {
-		singleton = &Context{Mutex: &sync.Mutex{}, FailureMode: failureSimulation{Enabled: false}}
+		singleton = &Context{Mutex: &sync.Mutex{}, FailureMode: FailureSimulation{Enabled: false}}
 	})
 	return singleton
 }

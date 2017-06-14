@@ -66,7 +66,7 @@ func setupHandlerChain(ctx *context.Context) http.Handler {
 		if ctx.FailureMode.Enabled {
 			h = handlers.FailureSimulationHandler(ctx, nil)
 		} else {
-			h = handlers.ResponeCodeHandler(ctx, nil)
+			h = handlers.ResponseCodeHandler(ctx, nil)
 		}
 
 		if ctx.LogJSON || ctx.LogPrettyJSON {
