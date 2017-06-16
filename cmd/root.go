@@ -49,7 +49,7 @@ func init() {
 
 	ctx.Out = os.Stdout
 
-	RootCmd.PersistentFlags().StringVarP(&ctx.HttpService, "http", "s", ":3115", "HTTP service address")
+	RootCmd.PersistentFlags().StringVarP(&ctx.HttpService, "http", "s", ":8081", "HTTP service address")
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -21,18 +21,14 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"time"
 )
 
 // RawRequestLoggingHandler returns a handler function that logs the incoming
 // HTTP request in plain text format
 func RawRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if h != nil {
-			h.ServeHTTP(w, r)
-		}
-
 		body, err := httputil.DumpRequest(r, true)
+
 		if err == nil {
 			body = append(body, []byte("\n")...)
 
@@ -40,9 +36,13 @@ func RawRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handler
 
 			ctx.Out.Write(body)
 
-			if ctx.Echo {
+			if ctx.Echo && !ctx.FailureSimulated() {
 				w.Write(body)
 			}
+		}
+
+		if h != nil {
+			h.ServeHTTP(w, r)
 		}
 	})
 }
@@ -51,11 +51,7 @@ func RawRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handler
 // HTTP request in a compact or formatted JSON format
 func JSONRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if h != nil {
-			h.ServeHTTP(w, r)
-		}
-
-		body, err := encodeAsJSON(r, ctx.LogPrettyJSON)
+		body, err := EncodeAsJSON(r, ctx.LogPrettyJSON)
 
 		if err != nil {
 			log.Fatal(err)
@@ -63,10 +59,26 @@ func JSONRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handle
 			body = append(body, []byte("\n")...)
 			ctx.Out.Write(body)
 
-			if ctx.Echo {
+			if ctx.Echo && !ctx.FailureSimulated() {
 				w.Header().Set("Content-Type", "application/json")
 				w.Write(body)
 			}
+		}
+
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+	})
+}
+
+// DelayHandler returns a handler function that introduces a delay in
+// responding to the HTTP request
+func DelayHandler(ctx *context.Context, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx.SimulateDelay()
+
+		if h != nil {
+			h.ServeHTTP(w, r)
 		}
 	})
 }
@@ -75,23 +87,11 @@ func JSONRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handle
 // HTTP status code
 func ResponseCodeHandler(ctx *context.Context, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if h != nil {
-			h.ServeHTTP(w, r)
-		}
-
 		w.WriteHeader(ctx.HttpCode)
-	})
-}
 
-// DelayHandler returns a handler function that introduces a delay in
-// responding to the HTTP request
-func DelayHandler(ctx *context.Context, h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if h != nil {
 			h.ServeHTTP(w, r)
 		}
-
-		time.Sleep(time.Duration(ctx.Delay) * time.Millisecond)
 	})
 }
 
@@ -100,11 +100,41 @@ func DelayHandler(ctx *context.Context, h http.Handler) http.Handler {
 // by a series of successful HTTP status codes
 func FailureSimulationHandler(ctx *context.Context, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		statusCode := ctx.SimulateFailure()
+
+		// Don't write the HTTP status header if this is a proxy mode,
+		// and the last simulation returned a successful outcome
+		if ctx.UpstreamURL == nil || ctx.FailureSimulated() {
+			w.WriteHeader(statusCode)
+		}
+
 		if h != nil {
 			h.ServeHTTP(w, r)
 		}
+	})
+}
 
-		w.WriteHeader(ctx.SimulateFailure())
+// ProxyHandler returns a handler function that forwards the incoming
+// HTTP request to an upstream HTTP service
+func ProxyHandler(ctx *context.Context, h http.Handler) http.Handler {
+	proxy := httputil.NewSingleHostReverseProxy(ctx.UpstreamURL)
+
+	return proxyHostHandler(proxy, h)
+}
+
+// proxyHostHandler will set the host in the upstream request to the URL host
+// This will ensure correct HTTP request proxying behavior
+func proxyHostHandler(proxy http.Handler, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.Host = r.URL.Host
+
+		if !context.Instance().FailureSimulated() {
+			proxy.ServeHTTP(w, r)
+		}
+
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
 	})
 }
 

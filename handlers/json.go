@@ -31,7 +31,7 @@ type requestModel struct {
 	Body             string   `json:"body,omitempty"`
 }
 
-func encodeAsJSON(r *http.Request, prettyPrint bool) ([]byte, error) {
+func EncodeAsJSON(r *http.Request, prettyPrint bool) ([]byte, error) {
 	model := requestModel{
 		RemoteAddr: r.RemoteAddr, Host: r.Host, Method: r.Method,
 		URL: r.RequestURI, Proto: r.Proto, Header: r.Header,

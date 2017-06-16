@@ -17,16 +17,19 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 )
 
 // Context type holds the desired execution profile for a command
 type Context struct {
 	Mutex         *sync.Mutex
 	HttpService   string
+	UpstreamURL   *url.URL
 	Out           io.Writer
 	LogJSON       bool
 	LogPrettyJSON bool
@@ -42,9 +45,9 @@ type FailureSimulation struct {
 	FailureCount          int
 	SuccessCount          int
 	FailureCode           int
-	SuccessCode           int
-	FailureIterationCount int
-	SuccessIterationCount int
+	failureIterationCount int
+	successIterationCount int
+	failureSimulated      bool
 }
 
 var singleton *Context
@@ -67,7 +70,7 @@ func (ctx *Context) StartServer() {
 	<-ch
 }
 
-// Execute a failure simulation and return an HTTP code representing the outcome
+// SimulateFailure will run a failure simulation and return an HTTP code representing the outcome
 func (ctx *Context) SimulateFailure() int {
 	ctx.Mutex.Lock()
 
@@ -76,39 +79,56 @@ func (ctx *Context) SimulateFailure() int {
 	var outcome int = ctx.HttpCode
 
 	if ctx.FailureMode.Enabled {
-		if ctx.FailureMode.FailureIterationCount < ctx.FailureMode.FailureCount {
+		if ctx.FailureMode.failureIterationCount < ctx.FailureMode.FailureCount {
 			outcome = ctx.FailureMode.FailureCode
+			ctx.FailureMode.failureSimulated = true
 
-			ctx.FailureMode.FailureIterationCount++
+			ctx.FailureMode.failureIterationCount++
 
-			if ctx.FailureMode.FailureIterationCount == ctx.FailureMode.FailureCount {
+			if ctx.FailureMode.failureIterationCount == ctx.FailureMode.FailureCount {
 				// Done with the failure sequence, next call will return success if needed
 				// Otherwise, continue with the failure sequence if success count is set to 0
 				if ctx.FailureMode.SuccessCount > 0 {
-					ctx.FailureMode.SuccessIterationCount = 0
+					ctx.FailureMode.successIterationCount = 0
 				} else {
-					ctx.FailureMode.FailureIterationCount = 0
+					ctx.FailureMode.failureIterationCount = 0
 				}
 			}
 
-		} else if ctx.FailureMode.SuccessIterationCount < ctx.FailureMode.SuccessCount {
-			outcome = ctx.FailureMode.SuccessCode
+		} else if ctx.FailureMode.successIterationCount < ctx.FailureMode.SuccessCount {
+			ctx.FailureMode.successIterationCount++
+			ctx.FailureMode.failureSimulated = false
 
-			ctx.FailureMode.SuccessIterationCount++
-
-			if ctx.FailureMode.SuccessIterationCount == ctx.FailureMode.SuccessCount {
+			if ctx.FailureMode.successIterationCount == ctx.FailureMode.SuccessCount {
 				// Done with the success sequence, next call will return failure if needed
 				// Otherwise, continue with the success sequence if failure count is set to 0
 				if ctx.FailureMode.FailureCount > 0 {
-					ctx.FailureMode.FailureIterationCount = 0
+					ctx.FailureMode.failureIterationCount = 0
 				} else {
-					ctx.FailureMode.SuccessIterationCount = 0
+					ctx.FailureMode.successIterationCount = 0
 				}
 			}
 		}
 	}
 
 	return outcome
+}
+
+// SimulateDelay will introduce a timed delay if specified
+func (ctx *Context) SimulateDelay() {
+	if ctx.Delay > 0 {
+		time.Sleep(time.Duration(ctx.Delay) * time.Millisecond)
+	}
+}
+
+//
+func (ctx *Context) FailureSimulated() bool {
+	return ctx.FailureSimulationEnabled() && ctx.FailureMode.failureSimulated
+}
+
+// Determine if the failure simulation mode is enabled for this invocation
+func (ctx *Context) FailureSimulationEnabled() bool {
+	return ctx.FailureMode.Enabled
 }
 
 // Close the context

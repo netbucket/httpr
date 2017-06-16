@@ -25,8 +25,8 @@ import (
 var logCmd = &cobra.Command{
 	Use:   "log",
 	Short: "Log the incoming HTTP requests",
-	Long: `Log the incoming HTTP requests to the standard output or a file, in raw or structured JSON format.
-See detailed help for options to modify the HTTP response behavior.`,
+	Long: `Start the HTTP server and log the incoming HTTP requests to the standard output.
+See options to modify the HTTP response behavior.`,
 	Run: executeLog,
 }
 
@@ -36,7 +36,7 @@ func init() {
 	ctx := context.Instance()
 
 	logCmd.Flags().BoolVarP(&ctx.LogJSON, "json", "j", false, "Log HTTP requests in JSON format")
-	logCmd.Flags().BoolVarP(&ctx.LogPrettyJSON, "json-pp", "p", false, "Log HTTP requests in pretty-printed (indented) JSON format, ")
+	logCmd.Flags().BoolVarP(&ctx.LogPrettyJSON, "json-pp", "p", false, "Log HTTP requests in pretty-printed (indented) JSON format")
 	logCmd.Flags().BoolVarP(&ctx.Echo, "echo", "e", false, "Send the logged contents back to the HTTP client")
 	logCmd.Flags().IntVarP(&ctx.HttpCode, "response-code", "r", 200, "Send the specified HTTP status code back to the client")
 	logCmd.Flags().IntVarP(&ctx.Delay, "delay", "d", 0, "Delay, in milliseconds, when replying to incoming HTTP requests")
@@ -44,30 +44,26 @@ func init() {
 	logCmd.Flags().IntVarP(&ctx.FailureMode.FailureCount, "simulate-failure-count", "", 1, "For --simulate-failure, determines how many errors are returned before a successful response")
 	logCmd.Flags().IntVarP(&ctx.FailureMode.SuccessCount, "simulate-success-count", "", 1, "For --simulate-failure, determines how many successful responses are returned before returning a error code")
 	logCmd.Flags().IntVarP(&ctx.FailureMode.FailureCode, "simulate-failure-code", "", 500, "For --simulate-failure, determines the HTTP status code for an error response")
-	logCmd.Flags().IntVarP(&ctx.FailureMode.SuccessCode, "simulate-success-code", "", 200, "For --simulate-failure, determines the HTTP status code for a successful response")
 }
 
 func executeLog(cmd *cobra.Command, args []string) {
 	ctx := context.Instance()
 
-	h := setupHandlerChain(ctx)
+	h := setupLogHandlerChain(ctx)
 
 	http.Handle("/", h)
 
+	//http.HandleFunc("/", logHandler)
 	// Start the HTTP server and handle the command
 	ctx.StartServer()
 
 	ctx.Close()
 }
 
-func setupHandlerChain(ctx *context.Context) http.Handler {
+func setupLogHandlerChain(ctx *context.Context) http.Handler {
 	var h http.Handler
 	{
-		if ctx.FailureMode.Enabled {
-			h = handlers.FailureSimulationHandler(ctx, nil)
-		} else {
-			h = handlers.ResponseCodeHandler(ctx, nil)
-		}
+		h = handlers.DelayHandler(ctx, nil)
 
 		if ctx.LogJSON || ctx.LogPrettyJSON {
 			h = handlers.JSONRequestLoggingHandler(ctx, h)
@@ -75,10 +71,11 @@ func setupHandlerChain(ctx *context.Context) http.Handler {
 			h = handlers.RawRequestLoggingHandler(ctx, h)
 		}
 
-		if ctx.Delay > 0 {
-			h = handlers.DelayHandler(ctx, h)
+		if ctx.FailureMode.Enabled {
+			h = handlers.FailureSimulationHandler(ctx, h)
+		} else {
+			h = handlers.ResponseCodeHandler(ctx, h)
 		}
-
 	}
 
 	return h
