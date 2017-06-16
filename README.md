@@ -11,11 +11,39 @@ It provides several capabilties that are useful when testing distributed HTTP-ba
 See **httpr help** for more information
  
 ## Installing httpr
-The quickest way to run **httpr** is via Docker:
+
+### Running httpr in Docker
+To run **httpr** in Docker:
 
   ```docker run -p 8081:8081 netbucket/httpr log -e -p```
+  
+### Install httpr binary
+### On macOS:
+1. Download the macOS binary:
 
-To install **httpr** locally, run *go get github.com/netbucket/httpr* followed by *go install*. 
+  ```curl -L0 https://sourceforge.net/projects/httpr/files/release/0.1.0/darwin/httpr -o httpr```
+  
+  
+2. Make it executalbe:
+
+  ```chmod 755 httpr```
+
+### On Linux:
+1. Download the Linux binary:
+
+  ```curl -L0 https://sourceforge.net/projects/httpr/files/release/0.1.0/linux/httpr -o httpr```
+  
+  
+2. Make it executalbe:
+
+  ```chmod 755 httpr```
+
+### On Windows:
+1. Download the Windows binary:
+
+  ```curl -L0 https://sourceforge.net/projects/httpr/files/release/0.1.0/windows/httpr -o httpr.exe```
+
+### More to come
 Work is underway to make **httpr** also available via *brew* for macOS, and *apt-get* for Linux.
  
 ## Logging HTTP Requests
