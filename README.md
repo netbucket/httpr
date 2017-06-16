@@ -33,8 +33,8 @@ To simulate a delay in returning the HTTP response to the client, use the *-d mi
  ## Proxying to Simulate Latency and Transient Failures
  Using **httpr**, it is easy to simulate latency or transient failures in front of an existing HTTP based endpoint. To do that, use the `httpr proxy` command.
  For instance, to log and then proxy HTTP requests to `https://www.google.com`, while simulating a transient failure, use:
-  
-    ```httpr proxy https://www.google.com -f```
+
+  ```httpr proxy https://www.google.com -f```
  
  
  
