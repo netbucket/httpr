@@ -37,6 +37,8 @@ type Context struct {
 	HttpCode      int
 	Delay         int
 	FailureMode   FailureSimulation
+	CertFile      string
+	KeyFile       string
 }
 
 // FailureSimulation desribes the intended behavior of the transient failure mode in httpr
@@ -63,7 +65,12 @@ func Instance() *Context {
 
 // Start the HTTP server
 func (ctx *Context) StartServer() {
-	go log.Fatal(http.ListenAndServe(ctx.HttpService, nil))
+
+	if len(ctx.KeyFile) > 0 && len(ctx.CertFile) > 0 {
+		go log.Fatal(http.ListenAndServeTLS(ctx.HttpService, ctx.CertFile, ctx.KeyFile, nil))
+	} else {
+		go log.Fatal(http.ListenAndServe(ctx.HttpService, nil))
+	}
 
 	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
