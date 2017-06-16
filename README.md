@@ -11,8 +11,11 @@ It provides several capabilties that are useful when testing distributed HTTP-ba
 See **httpr help** for more information
  
 ## Installing httpr
-Currently, the quickest way to install **httpr** is to *go get github.com/netbucket/httpr* followed by *go install*. 
-Work is underway to make **httpr** available via *brew* for macOS, *DockerHub*, and *apt-get* for Linux.
+The quickest way to run **httpr** is via Docker:
+  ```docker run -p 8081:8081 netbucket/httpr log -e -p```
+
+To install **httpr** locally, run *go get github.com/netbucket/httpr* followed by *go install*. 
+Work is underway to make **httpr** also available via *brew* for macOS, and *apt-get* for Linux.
  
 ## Logging HTTP Requests
 To log incoming HTTP requests to standard output, use the `httpr log` command. Note that by default, **httpr** will start the HTTP server on port 8081. See `httpr help log` for more options.
