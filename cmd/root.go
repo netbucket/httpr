@@ -17,9 +17,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/netbucket/httpr/context"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/netbucket/httpr/context"
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -50,6 +50,8 @@ func init() {
 	ctx.Out = os.Stdout
 
 	RootCmd.PersistentFlags().StringVarP(&ctx.HttpService, "http", "s", ":8081", "HTTP service address")
+	RootCmd.PersistentFlags().StringVarP(&ctx.KeyFile, "keyFile", "k", "", "Key file for HTTPS")
+	RootCmd.PersistentFlags().StringVarP(&ctx.CertFile, "certFile", "c", "", "Certificate for HTTPS")
 }
 
 // initConfig reads in config file and ENV variables if set.
