@@ -12,6 +12,7 @@ See **httpr help** for more information
  
 ## Installing httpr
 The quickest way to run **httpr** is via Docker:
+
   ```docker run -p 8081:8081 netbucket/httpr log -e -p```
 
 To install **httpr** locally, run *go get github.com/netbucket/httpr* followed by *go install*. 
@@ -38,12 +39,4 @@ To simulate a delay in returning the HTTP response to the client, use the *-d mi
  For instance, to log and then proxy HTTP requests to `https://www.google.com`, while simulating a transient failure, use:
 
   ```httpr proxy https://www.google.com -f```
- 
- 
- 
- 
- 
-
- 
- 
  
