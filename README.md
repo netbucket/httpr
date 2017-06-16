@@ -11,8 +11,40 @@ It provides several capabilties that are useful when testing distributed HTTP-ba
 See **httpr help** for more information
  
 ## Installing httpr
-Currently, the quickest way to install **httpr** is to *go get github.com/netbucket/httpr* followed by *go install*. 
-Work is underway to make **httpr** available via *brew* for macOS, *DockerHub*, and *apt-get* for Linux.
+
+### Running httpr in Docker
+To run **httpr** in Docker:
+
+  ```docker run -p 8081:8081 netbucket/httpr log -e -p```
+  
+### Install httpr binary
+### On macOS:
+1. Download the macOS binary:
+
+  ```curl -L0 https://sourceforge.net/projects/httpr/files/release/0.1.0/darwin/httpr -o httpr```
+  
+  
+2. Make it executalbe:
+
+  ```chmod 755 httpr```
+
+### On Linux:
+1. Download the Linux binary:
+
+  ```curl -L0 https://sourceforge.net/projects/httpr/files/release/0.1.0/linux/httpr -o httpr```
+  
+  
+2. Make it executalbe:
+
+  ```chmod 755 httpr```
+
+### On Windows:
+1. Download the Windows binary:
+
+  ```curl -L0 https://sourceforge.net/projects/httpr/files/release/0.1.0/windows/httpr -o httpr.exe```
+
+### More to come
+Work is underway to make **httpr** also available via *brew* for macOS, and *apt-get* for Linux.
  
 ## Logging HTTP Requests
 To log incoming HTTP requests to standard output, use the `httpr log` command. Note that by default, **httpr** will start the HTTP server on port 8081. See `httpr help log` for more options.
@@ -35,12 +67,4 @@ To simulate a delay in returning the HTTP response to the client, use the *-d mi
  For instance, to log and then proxy HTTP requests to `https://www.google.com`, while simulating a transient failure, use:
 
   ```httpr proxy https://www.google.com -f```
- 
- 
- 
- 
- 
-
- 
- 
  
