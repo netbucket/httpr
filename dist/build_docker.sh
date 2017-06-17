@@ -3,7 +3,7 @@
 # Build the Docker image for httpr
 #
 HTTPR_IMAGE="netbucket/httpr"
-HTTPR_VERSION="0.1.0"
+HTTPR_VERSION="0.1.1"
 
 docker build dist -f dist/Dockerfile -t $HTTPR_IMAGE:$HTTPR_VERSION -t $HTTPR_IMAGE:latest
 docker push $HTTPR_IMAGE:$HTTPR_VERSION

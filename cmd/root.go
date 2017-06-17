@@ -19,7 +19,6 @@ import (
 
 	"github.com/netbucket/httpr/context"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -43,16 +42,9 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
 	ctx := context.Instance()
 
 	ctx.Out = os.Stdout
 
 	RootCmd.PersistentFlags().StringVarP(&ctx.HttpService, "http", "s", ":8081", "HTTP service address")
-}
-
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	viper.AutomaticEnv() // read in environment variables that match
 }

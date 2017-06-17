@@ -19,14 +19,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const Version =  "0.1.0"
+const Version = "0.1.1"
 
 // logCmd represents the log command
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number",
-	Long: `Print httpr version number`,
-	Run: executeVersion,
+	Long:  `Print httpr version number`,
+	Run:   executeVersion,
 }
 
 func init() {
@@ -34,5 +34,5 @@ func init() {
 }
 
 func executeVersion(cmd *cobra.Command, args []string) {
-	fmt.Printf("httr (HTTP Rake) version %s\n", Version)
+	fmt.Printf("httpr (HTTP Rake) version %s\n", Version)
 }
