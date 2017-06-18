@@ -14,6 +14,7 @@
 package context
 
 import (
+	"github.com/netbucket/httpr/tls"
 	"io"
 	"log"
 	"net/http"
@@ -29,6 +30,9 @@ import (
 type Context struct {
 	Mutex         *sync.Mutex
 	HttpService   string
+	EnableTLS     bool
+	CertFile      string
+	KeyFile       string
 	UpstreamURL   *url.URL
 	Out           io.Writer
 	LogJSON       bool
@@ -63,7 +67,12 @@ func Instance() *Context {
 
 // Start the HTTP server
 func (ctx *Context) StartServer() {
-	go log.Fatal(http.ListenAndServe(ctx.HttpService, nil))
+
+	if ctx.EnableTLS {
+		go log.Fatal(tls.StartHTTPSListener(ctx.HttpService, ctx.CertFile, ctx.KeyFile))
+	} else {
+		go log.Fatal(http.ListenAndServe(ctx.HttpService, nil))
+	}
 
 	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)

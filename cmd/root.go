@@ -46,5 +46,8 @@ func init() {
 
 	ctx.Out = os.Stdout
 
-	RootCmd.PersistentFlags().StringVarP(&ctx.HttpService, "http", "s", ":8081", "HTTP service address")
+	RootCmd.PersistentFlags().StringVarP(&ctx.HttpService, "http", "s", ":8081", "HTTP/HTTPS service address")
+	RootCmd.PersistentFlags().BoolVarP(&ctx.EnableTLS, "enable-tls", "t", false, "Start in TLS/HTTPS mode")
+	RootCmd.PersistentFlags().StringVarP(&ctx.CertFile, "tls-cert-file", "", "", "Public certificate file name (for use with -t). If blank, a temporary self-signed cert is used.")
+	RootCmd.PersistentFlags().StringVarP(&ctx.KeyFile, "tls-key-file", "", "", "Private key file name  (for use with -t). If blank, a temporary self-signed cert is used.")
 }

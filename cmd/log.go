@@ -53,7 +53,6 @@ func executeLog(cmd *cobra.Command, args []string) {
 
 	http.Handle("/", h)
 
-	//http.HandleFunc("/", logHandler)
 	// Start the HTTP server and handle the command
 	ctx.StartServer()
 

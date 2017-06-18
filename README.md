@@ -21,7 +21,7 @@ To run **httpr** in Docker:
 ### On macOS:
 1. Download the macOS binary:
 
-   ```curl -L0 https://sourceforge.net/projects/httpr/files/release/0.1.1/darwin/httpr -o httpr```
+   ```curl -L0 https://sourceforge.net/projects/httpr/files/release/0.1.2/darwin/httpr -o httpr```
   
   
 2. Make it executalbe:
@@ -31,7 +31,7 @@ To run **httpr** in Docker:
 ### On Linux:
 1. Download the Linux binary:
 
-   ```curl -L0 https://sourceforge.net/projects/httpr/files/release/0.1.1/linux/httpr -o httpr```
+   ```curl -L0 https://sourceforge.net/projects/httpr/files/release/0.1.2/linux/httpr -o httpr```
   
   
 2. Make it executalbe:
@@ -41,7 +41,7 @@ To run **httpr** in Docker:
 ### On Windows:
 1. Download the Windows binary:
 
-   ```curl -L0 https://sourceforge.net/projects/httpr/files/release/0.1.1/windows/httpr -o httpr.exe```
+   ```curl -L0 https://sourceforge.net/projects/httpr/files/release/0.1.2/windows/httpr -o httpr.exe```
 
 ### More to come
 Work is underway to make **httpr** also available via *brew* for macOS, and *apt-get* for Linux.
@@ -67,4 +67,9 @@ To simulate a delay in returning the HTTP response to the client, use the *-d mi
  For instance, to log and then proxy HTTP requests to `https://www.google.com`, while simulating a transient failure, use:
 
    ```httpr proxy https://www.google.com -f```
- 
+   
+## TLS/HTTPS Support
+To start **httpr** server in HTTPS mode, use the *-t* option. By default, **httpr** will generate and use
+a self-signed certificate, and print the PEM-encoded certificate to the console. To supply your own
+certificate, use the *--tls-cert-file* and *--tls-key-file* options with the *-t* flag to specify
+the path/name of the certificate file and the private key file.
