@@ -1,4 +1,4 @@
-FROM scratch
+FROM centurylink/ca-certs
 
 MAINTAINER Igor Bondarenko <ibondare@protonmail.com>
 
