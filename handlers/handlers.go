@@ -15,6 +15,7 @@ package handlers
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	"github.com/netbucket/httpr/context"
 	"io/ioutil"
@@ -118,6 +119,12 @@ func FailureSimulationHandler(ctx *context.Context, h http.Handler) http.Handler
 // HTTP request to an upstream HTTP service
 func ProxyHandler(ctx *context.Context, h http.Handler) http.Handler {
 	proxy := httputil.NewSingleHostReverseProxy(ctx.UpstreamURL)
+
+	if ctx.IgnoreTLSErrors {
+		proxy.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+	}
 
 	return proxyHostHandler(proxy, h)
 }

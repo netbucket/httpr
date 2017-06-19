@@ -28,19 +28,20 @@ import (
 
 // Context type holds the desired execution profile for a command
 type Context struct {
-	Mutex         *sync.Mutex
-	HttpService   string
-	EnableTLS     bool
-	CertFile      string
-	KeyFile       string
-	UpstreamURL   *url.URL
-	Out           io.Writer
-	LogJSON       bool
-	LogPrettyJSON bool
-	Echo          bool
-	HttpCode      int
-	Delay         int
-	FailureMode   FailureSimulation
+	Mutex           *sync.Mutex
+	HttpService     string
+	EnableTLS       bool
+	CertFile        string
+	KeyFile         string
+	UpstreamURL     *url.URL
+	Out             io.Writer
+	LogJSON         bool
+	LogPrettyJSON   bool
+	Echo            bool
+	HttpCode        int
+	Delay           int
+	IgnoreTLSErrors bool
+	FailureMode     FailureSimulation
 }
 
 // FailureSimulation desribes the intended behavior of the transient failure mode in httpr
@@ -60,7 +61,7 @@ var once sync.Once
 
 func Instance() *Context {
 	once.Do(func() {
-		singleton = &Context{Mutex: &sync.Mutex{}, FailureMode: FailureSimulation{Enabled: false}}
+		singleton = &Context{Mutex: &sync.Mutex{}, Out: os.Stdout, FailureMode: FailureSimulation{Enabled: false}}
 	})
 	return singleton
 }

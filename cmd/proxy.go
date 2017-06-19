@@ -43,6 +43,7 @@ func init() {
 	proxyCmd.Flags().BoolVarP(&ctx.FailureMode.Enabled, "simulate-failure", "f", false, "Simulate a transient failure: return an error code before proxying the request upstream")
 	proxyCmd.Flags().IntVarP(&ctx.FailureMode.FailureCount, "simulate-failure-count", "", 1, "For --simulate-failure, determines how many errors are returned before proxying the request upstream")
 	proxyCmd.Flags().IntVarP(&ctx.FailureMode.FailureCode, "simulate-failure-code", "", 500, "For --simulate-failure, determines the HTTP status code for an error response")
+	proxyCmd.Flags().BoolVarP(&ctx.IgnoreTLSErrors, "insecure", "k", false, "Ignore upstream TLS certificate errors")
 }
 
 func executeProxy(cmd *cobra.Command, args []string) {
