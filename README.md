@@ -74,6 +74,6 @@ a self-signed certificate, and print the PEM-encoded certificate to the console.
 certificate, use the *--tls-cert-file* and *--tls-key-file* options with the *-t* flag to specify
 the path/name of the certificate file and the private key file.
 
-To ingore upstream TLS errors when proxying HTTPS requests with *httpr proxy*, use the *-k* flag with the *proxy* command.
+To ingore upstream TLS errors when proxying HTTPS requests with *httpr proxy*, use the *-k* flag.
 
 
