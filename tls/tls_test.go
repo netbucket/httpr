@@ -17,6 +17,8 @@ import (
 	"crypto/ecdsa"
 	"crypto/rsa"
 	"testing"
+	"crypto/x509"
+	"time"
 )
 
 func TestKeyLength(t *testing.T) {
@@ -38,5 +40,31 @@ func TestKeyLength(t *testing.T) {
 
 	if keyLength < 2048 {
 		t.Errorf("Private key length is too small:  %d\n", keyLength)
+	}
+}
+
+func TestCertExpiration(t *testing.T) {
+	cert, err := generateSelfSignedCert()
+
+	if err != nil {
+		t.Fatalf("Unexpected error: %v\n", err)
+	}
+
+	x509Cert, err := x509.ParseCertificate(cert.Certificate[0])
+
+	if err != nil {
+		t.Fatalf("Unexpected error: %v\n", err)
+	}
+
+	// The cert is expected to expire in a year
+	expiresAfter := time.Now().Add(time.Hour * 24 * 364)
+	expiresBefore := time.Now().Add(time.Hour * 24 * 366)
+
+	if x509Cert.NotAfter.Before(expiresAfter) {
+		t.Errorf("Certificate expiration date is %v, expected after %v", x509Cert.NotAfter, expiresAfter)
+	}
+
+	if x509Cert.NotAfter.After(expiresBefore) {
+		t.Errorf("Certificate expiration date is %v, expected before %v", x509Cert.NotAfter, expiresBefore)
 	}
 }
