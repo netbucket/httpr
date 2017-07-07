@@ -93,9 +93,8 @@ func TestFailureSimulationHandler(t *testing.T) {
 			FailureCount: 1,
 			FailureCode:  expectedFailureResponse,
 			SuccessCount: 1,
-			SuccessCode:  expectedSuccessResponse,
 		},
-		HttpCode: 200}
+		HttpCode: expectedSuccessResponse}
 
 	h := FailureSimulationHandler(ctx, nil)
 

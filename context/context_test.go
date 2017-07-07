@@ -33,7 +33,7 @@ func TestDisabledSimulateFailure(t *testing.T) {
 	ctx := &Context{
 		Mutex: &sync.Mutex{},
 		FailureMode: FailureSimulation{
-			Enabled: false, FailureCount: 2, SuccessCount: 2, FailureCode: 500, SuccessCode: 201},
+			Enabled: false, FailureCount: 2, SuccessCount: 2, FailureCode: 500},
 		HttpCode: expectedHttpCode}
 
 	actualHttpCode := ctx.SimulateFailure()
@@ -50,27 +50,27 @@ func TestSimulateFailure(t *testing.T) {
 		&Context{
 			Mutex: &sync.Mutex{},
 			FailureMode: FailureSimulation{
-				Enabled: true, FailureCount: 5, SuccessCount: 10, FailureCode: 500, SuccessCode: 200},
+				Enabled: true, FailureCount: 5, SuccessCount: 10, FailureCode: 500},
 		},
 		&Context{
 			Mutex: &sync.Mutex{},
 			FailureMode: FailureSimulation{
-				Enabled: true, FailureCount: 1, SuccessCount: 1, FailureCode: 502, SuccessCode: 201},
+				Enabled: true, FailureCount: 1, SuccessCount: 1, FailureCode: 502},
 		},
 		&Context{
 			Mutex: &sync.Mutex{},
 			FailureMode: FailureSimulation{
-				Enabled: true, FailureCount: 5, SuccessCount: 0, FailureCode: 500, SuccessCode: 200},
+				Enabled: true, FailureCount: 5, SuccessCount: 0, FailureCode: 500},
 		},
 		&Context{
 			Mutex: &sync.Mutex{},
 			FailureMode: FailureSimulation{
-				Enabled: true, FailureCount: 0, SuccessCount: 5, FailureCode: 500, SuccessCode: 200},
+				Enabled: true, FailureCount: 0, SuccessCount: 5, FailureCode: 500},
 		},
 		&Context{
 			Mutex: &sync.Mutex{},
 			FailureMode: FailureSimulation{
-				Enabled: true, FailureCount: 0, SuccessCount: 0, FailureCode: 500, SuccessCode: 200},
+				Enabled: true, FailureCount: 0, SuccessCount: 0, FailureCode: 500},
 		},
 	}
 
@@ -81,7 +81,7 @@ func TestSimulateFailure(t *testing.T) {
 			}
 		}
 		for sCount := 0; sCount < ctx.FailureMode.SuccessCount; sCount++ {
-			if httpCode := ctx.SimulateFailure(); httpCode != ctx.FailureMode.SuccessCode {
+			if httpCode := ctx.SimulateFailure(); httpCode != ctx.HttpCode {
 				t.Errorf("Expected HTTP status code %d, got %d")
 			}
 		}
