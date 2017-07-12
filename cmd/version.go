@@ -19,7 +19,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const Version = "0.1.3"
+const Version = "1.0.0"
 
 // logCmd represents the log command
 var versionCmd = &cobra.Command{
