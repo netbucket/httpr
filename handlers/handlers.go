@@ -61,9 +61,21 @@ func JSONRequestLoggingHandler(ctx *context.Context, h http.Handler) http.Handle
 			ctx.Out.Write(body)
 
 			if ctx.Echo && !ctx.FailureSimulated() {
-				w.Header().Set("Content-Type", "application/json")
 				w.Write(body)
 			}
+		}
+
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+	})
+}
+
+// ContentTypeHandler will set the correct content type for the HTTP response
+func ContentTypeHandler(ctx *context.Context, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if ctx.LogJSON || ctx.LogPrettyJSON {
+			w.Header().Set("Content-Type", "application/json")
 		}
 
 		if h != nil {

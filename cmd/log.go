@@ -75,6 +75,8 @@ func setupLogHandlerChain(ctx *context.Context) http.Handler {
 		} else {
 			h = handlers.ResponseCodeHandler(ctx, h)
 		}
+
+		h = handlers.ContentTypeHandler(ctx, h)
 	}
 
 	return h

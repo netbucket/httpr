@@ -112,3 +112,29 @@ func TestFailureSimulationHandler(t *testing.T) {
 		t.Errorf("Expected HTTP status %d, got %d", expectedSuccessResponse, rec.Code)
 	}
 }
+
+func TestJSONContentType(t *testing.T) {
+	expectedContentType := "application/json"
+
+	req, err := http.NewRequest("GET", "/", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rec := httptest.NewRecorder()
+
+	ctx := &context.Context{
+		Mutex:       &sync.Mutex{},
+		FailureMode: context.FailureSimulation{Enabled: false},
+		HttpCode:    http.StatusOK,
+		LogJSON: true}
+
+	ContentTypeHandler(ctx, nil).ServeHTTP(rec, req)
+
+	contentType := rec.Header().Get("Content-Type")
+
+	if expectedContentType != contentType {
+		t.Errorf("Expected content type %s, got %s", expectedContentType, contentType)
+	}
+}
