@@ -77,12 +77,14 @@ func TestSimulateFailure(t *testing.T) {
 	for _, ctx := range tests {
 		for fCount := 0; fCount < ctx.FailureMode.FailureCount; fCount++ {
 			if httpCode := ctx.SimulateFailure(); httpCode != ctx.FailureMode.FailureCode {
-				t.Errorf("Expected HTTP status code %d, got %d")
+				t.Errorf("Expected HTTP status code %d, got %d",
+					ctx.FailureMode.FailureCode, httpCode)
 			}
 		}
 		for sCount := 0; sCount < ctx.FailureMode.SuccessCount; sCount++ {
 			if httpCode := ctx.SimulateFailure(); httpCode != ctx.HttpCode {
-				t.Errorf("Expected HTTP status code %d, got %d")
+				t.Errorf("Expected HTTP status code %d, got %d",
+					ctx.HttpCode, httpCode)
 			}
 		}
 	}
