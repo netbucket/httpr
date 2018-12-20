@@ -8,7 +8,9 @@ It provides several capabilties that are useful when testing distributed HTTP-ba
  * Simulate a transient HTTP failure
  * Return a specific HTTP status code to the HTTP client
  * Act as a proxy capable of simulating latency and/or transient failures in front of the upstream service
- 
+
+**httpr**, thanks to its compact nature and flexibility, can be used as an effective test tool when provisioning Kubernetes clusters: see https://github.com/netbucket/k8s-canary
+
 See **httpr help** for more information
  
 ## Installing httpr
