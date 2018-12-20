@@ -15,7 +15,39 @@ See **httpr help** for more information
 ### Running httpr in Docker
 To run **httpr** in Docker:
 
-  ```docker run -p 8081:8081 netbucket/httpr log -e -p```
+  ```docker run -p 8081:80 netbucket/httpr```
+
+In the above exaple, the **httpr** container will start the We server process on port 80 (exposed as port 8081 on the host), and will run in the log mode. That is, it will respond to incoming HTTP requests with a JSON payload showing all the data in the client request. For instance, for a local Docker host, running the above example, and then pointing a Chrome browser to http://localhost:8081/foo/bar will show the followin:
+
+```
+{
+    "remoteAddr": "XXX.XX.X.X:51832",
+    "host": "localhost:8083",
+    "method": "GET",
+    "url": "/",
+    "proto": "HTTP/1.1",
+    "header": {
+        "Accept": [
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
+        ],
+        "Accept-Encoding": [
+            "gzip, deflate, br"
+        ],
+        "Accept-Language": [
+            "en-US,en;q=0.9"
+        ],
+        "Connection": [
+            "keep-alive"
+        ],
+        "Upgrade-Insecure-Requests": [
+            "1"
+        ],
+        "User-Agent": [
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
+        ]
+    }
+}
+```
   
 ### Installing httpr binary
 ### On macOS:
