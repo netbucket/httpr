@@ -14,7 +14,7 @@ RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 WORKDIR /
 COPY --from=builder /go/src/github.com/netbucket/httpr/httpr .
 
-EXPOSE 8081
+EXPOSE 80
 
 ENTRYPOINT ["/httpr"]
 CMD ["log", "-e", "-p", "-s=:80"]
