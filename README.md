@@ -42,9 +42,6 @@ To run **httpr** in Docker:
 1. Download the Windows binary:
 
    ```curl -L0 https://sourceforge.net/projects/httpr/files/release/1.0.0/windows/httpr -o httpr.exe```
-
-### More to come
-Work is underway to make **httpr** also available via *brew* for macOS, and *apt-get* for Linux.
  
 ## Logging HTTP Requests
 To log incoming HTTP requests to standard output, use the `httpr log` command. Note that by default, **httpr** will start the HTTP server on port 8081. See `httpr help log` for more options.
