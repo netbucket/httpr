@@ -1,5 +1,5 @@
 # Run a clean build
-FROM golang:1.10 as builder
+FROM golang:1.11 as builder
 
 RUN go get github.com/spf13/cobra
 RUN go get github.com/netbucket/httpr
@@ -17,3 +17,4 @@ COPY --from=builder /go/src/github.com/netbucket/httpr/httpr .
 EXPOSE 8081
 
 ENTRYPOINT ["/httpr"]
+CMD ["log", "-e", "-p", "-s=:80"]
