@@ -3,6 +3,7 @@ HTTP Rake - **httpr** - is a lightweight and flexible HTTP testing tool that is 
 
 It provides several capabilties that are useful when testing distributed HTTP-based interactions:
  * Log incoming requests in raw or JSON format
+ * Support for HTTP/2 (requires the use of TLS: use the -t option, see below for details)
  * Simulate latency
  * Simulate a transient HTTP failure
  * Return a specific HTTP status code to the HTTP client
