@@ -18,7 +18,7 @@ To run **httpr** in Docker:
 
   ```docker run -p 8081:80 netbucket/httpr```
 
-In the above exaple, the **httpr** container will start the We server process on port 80 (exposed as port 8081 on the host), and will run in the log mode. That is, it will respond to incoming HTTP requests with a JSON payload showing all the data in the client request. For instance, for a local Docker host, running the above example, and then pointing a Chrome browser to http://localhost:8081/foo/bar will show the followin:
+In the above exaple, the **httpr** container will start the Web server on port 80 (exposed as port 8081 on the host), and will run in the log mode. That is, it will respond to incoming HTTP requests with a JSON payload showing all the data in the client request. For instance, for a local Docker host, running the above example, and then pointing a Chrome browser to http://localhost:8081/foo/bar will show the followin:
 
 ```
 {
