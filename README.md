@@ -25,7 +25,7 @@ In the above exaple, the **httpr** container will start the Web server on port 8
     "remoteAddr": "XXX.XX.X.X:51832",
     "host": "localhost:8081",
     "method": "GET",
-    "url": "/",
+    "url": "/foo/bar",
     "proto": "HTTP/1.1",
     "header": {
         "Accept": [
