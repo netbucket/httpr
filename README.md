@@ -22,7 +22,7 @@ To run **httpr** in Docker:
 
 In the above exaple, the **httpr** container will start the Web server on port 80 (exposed as port 8081 on the host), and will run in the log mode. That is, it will respond to incoming HTTP requests with a JSON payload showing all the data in the client request. For instance, for a local Docker host, running the above example, and then pointing a Chrome browser to http://localhost:8081/foo/bar will show the followin:
 
-```
+```JavaScript
 {
     "remoteAddr": "XXX.XX.X.X:51832",
     "host": "localhost:8081",
@@ -46,8 +46,8 @@ In the above exaple, the **httpr** container will start the Web server on port 8
             "1"
         ],
         "User-Agent": [
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
-        ]
+            "Mozilla/5.0 (....) AppleWebKit/... (KHTML, like Gecko) Chrome/... Safari/..."
+         ]
     }
 }
 ```
