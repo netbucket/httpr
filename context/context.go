@@ -14,7 +14,7 @@
 package context
 
 import (
-	"github.com/netbucket/httpr/tls"
+	"crypto/tls"
 	"io"
 	"log"
 	"net/http"
@@ -24,6 +24,8 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/netbucket/privatetls"
 )
 
 // Context type holds the desired execution profile for a command
@@ -70,7 +72,7 @@ func Instance() *Context {
 func (ctx *Context) StartServer() {
 
 	if ctx.EnableTLS {
-		go log.Fatal(tls.StartHTTPSListener(ctx.HttpService, ctx.CertFile, ctx.KeyFile))
+		go log.Fatal(startHTTPSListener(ctx.HttpService, ctx.CertFile, ctx.KeyFile))
 	} else {
 		go log.Fatal(http.ListenAndServe(ctx.HttpService, nil))
 	}
@@ -144,4 +146,27 @@ func (ctx *Context) FailureSimulationEnabled() bool {
 // Close the context
 func (ctx *Context) Close() {
 	// noop for now
+}
+
+// startHTTPSListener starts an HTTPS server at the address specified by the service parameter
+// If either or both certFile and keyFile are blank, a self-singned cert is generated
+func startHTTPSListener(service, certFile, keyFile string) error {
+	s := http.Server{}
+
+	// If certFile and/or keyFile are blank, generate a self-signed TLS cert
+	if len(certFile) == 0 || len(keyFile) == 0 {
+		selfSignedCert, err := privatetls.NewCert()
+
+		if err != nil {
+			return err
+		}
+
+		s.TLSConfig = &tls.Config{
+			Certificates: []tls.Certificate{selfSignedCert},
+		}
+	}
+
+	s.Addr = service
+
+	return s.ListenAndServeTLS(certFile, keyFile)
 }
