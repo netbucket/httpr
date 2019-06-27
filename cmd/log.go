@@ -21,7 +21,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// logCmd represents the log command
 var logCmd = &cobra.Command{
 	Use:   "log",
 	Short: "Log the incoming HTTP requests",

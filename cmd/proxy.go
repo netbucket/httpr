@@ -16,14 +16,14 @@ package cmd
 import (
 	"net/http"
 
+	"log"
+	"net/url"
+
 	"github.com/netbucket/httpr/context"
 	"github.com/netbucket/httpr/handlers"
 	"github.com/spf13/cobra"
-	"log"
-	"net/url"
 )
 
-// logCmd represents the log command
 var proxyCmd = &cobra.Command{
 	Use:   "proxy <upstream-url>",
 	Short: "Proxy HTTP requests to an upstream server.",

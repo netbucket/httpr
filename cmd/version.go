@@ -19,9 +19,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Version represents the version number of the tool
 const Version = "1.0.0"
 
-// logCmd represents the log command
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number",
