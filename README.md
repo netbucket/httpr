@@ -14,8 +14,6 @@ It provides several capabilties that are useful when testing distributed HTTP-ba
 See **httpr help** for more information
  
 ##  httpr
-
-### Running httpr in Docker
 By default, **httpr** will start the Web server on port 80 , and will run in the log mode. That is, it will respond to incoming HTTP requests with a JSON payload that echoes back all the data in the client request. For instance, running the process locally, pointing a Chrome browser to http://localhost/foo/bar will show the following:
 
 ```JavaScript
