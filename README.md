@@ -13,14 +13,10 @@ It provides several capabilties that are useful when testing distributed HTTP-ba
 
 See **httpr help** for more information
  
-## Installing httpr
+##  httpr
 
 ### Running httpr in Docker
-To run **httpr** in Docker:
-
-  ```docker run -p 8081:80 netbucket/httpr```
-
-In the above exaple, the **httpr** container will start the Web server on port 80 (exposed as port 8081 on the host), and will run in the log mode. That is, it will respond to incoming HTTP requests with a JSON payload showing all the data in the client request. For instance, for a local Docker host, running the above example, and then pointing a Chrome browser to http://localhost:8081/foo/bar will show the followin:
+By default, **httpr** will start the Web server on port 80 , and will run in the log mode. That is, it will respond to incoming HTTP requests with a JSON payload that echoes back all the data in the client request. For instance, running the process locally, pointing a Chrome browser to http://localhost/foo/bar will show the following:
 
 ```JavaScript
 {
@@ -51,32 +47,6 @@ In the above exaple, the **httpr** container will start the Web server on port 8
     }
 }
 ```
-  
-### Installing httpr binary
-### On macOS:
-1. Download the macOS binary:
-
-   ```curl -L0 https://sourceforge.net/projects/httpr/files/release/1.0.0/darwin/httpr -o httpr```
-  
-  
-2. Make it executalbe:
-
-   ```chmod 755 httpr```
-
-### On Linux:
-1. Download the Linux binary:
-
-   ```curl -L0 https://sourceforge.net/projects/httpr/files/release/1.0.0/linux/httpr -o httpr```
-  
-  
-2. Make it executalbe:
-
-   ```chmod 755 httpr```
-
-### On Windows:
-1. Download the Windows binary:
-
-   ```curl -L0 https://sourceforge.net/projects/httpr/files/release/1.0.0/windows/httpr -o httpr.exe```
  
 ## Logging HTTP Requests
 To log incoming HTTP requests to standard output, use the `httpr log` command. Note that by default, **httpr** will start the HTTP server on port 8081. See `httpr help log` for more options.
